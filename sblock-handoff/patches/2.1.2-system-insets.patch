@@ -1,0 +1,83 @@
+--- a/sblock-android/app/src/main/java/com/streamshield/mobile/MainActivity.kt
++++ b/sblock-android/app/src/main/java/com/streamshield/mobile/MainActivity.kt
+@@ -21,6 +21,8 @@
+ import android.widget.Switch
+ import android.widget.TextView
+ import android.widget.Toast
++import androidx.core.view.ViewCompat
++import androidx.core.view.WindowInsetsCompat
+@@ -79,7 +81,11 @@
+         super.onCreate(savedInstanceState)
+         window.statusBarColor = Color.rgb(13, 18, 29)
+-        window.navigationBarColor = Color.rgb(13, 18, 29)
++        window.navigationBarColor = Color.rgb(19, 27, 41)
++        // Android 15 enforces edge-to-edge for targetSdk 35. Apply system bar insets.
++        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+         DomainRules.load(this)
+         render()
+@@ -88,8 +94,18 @@
+         val base = LinearLayout(this).apply {
+             orientation = LinearLayout.VERTICAL
+             setBackgroundColor(Color.rgb(13, 18, 29))
++            clipToPadding = false
++        }
++        ViewCompat.setOnApplyWindowInsetsListener(base) { view, insets ->
++            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
++            view.setPadding(0, bars.top, 0, bars.bottom)
++            insets
++        }
++        val scroll = ScrollView(this).apply {
++            isFillViewport = false
++            clipToPadding = false
++            overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+         }
+-        val scroll = ScrollView(this).apply { isFillViewport = false; clipToPadding = false }
+@@ -203,6 +219,7 @@
+         val protection = LinearLayout(this).apply {
+             orientation = LinearLayout.VERTICAL
+             gravity = Gravity.TOP
++            minimumHeight = 0
+@@ -253,6 +270,7 @@
+         base.addView(bottom, LinearLayout.LayoutParams(-1, dp(60)))
+         setContentView(base)
++        ViewCompat.requestApplyInsets(base)
+         updateStatus()
+
+--- a/sblock-android/app/src/main/java/com/streamshield/mobile/BrowserActivity.kt
++++ b/sblock-android/app/src/main/java/com/streamshield/mobile/BrowserActivity.kt
+@@ -15,6 +15,8 @@
+ import android.widget.LinearLayout
+ import android.widget.TextView
+ import android.widget.Toast
++import androidx.core.view.ViewCompat
++import androidx.core.view.WindowInsetsCompat
+@@ -53,7 +55,8 @@
+         super.onCreate(savedInstanceState)
+         window.statusBarColor = Color.rgb(13, 20, 34)
+-        window.navigationBarColor = Color.rgb(13, 20, 34)
++        window.navigationBarColor = Color.rgb(15, 24, 39)
++        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+@@ -99,6 +102,12 @@
+         val root = LinearLayout(this).apply {
+             orientation = LinearLayout.VERTICAL
+             setBackgroundColor(Color.rgb(11, 18, 32))
++            clipToPadding = false
++        }
++        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
++            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
++            view.setPadding(0, bars.top, 0, bars.bottom)
++            insets
+         }
+@@ -194,6 +203,7 @@
+         root.addView(browserBottomBar, LinearLayout.LayoutParams(-1, dp(62)))
+         setContentView(root)
++        ViewCompat.requestApplyInsets(root)
+
+--- a/sblock-android/app/build.gradle.kts
++++ b/sblock-android/app/build.gradle.kts
+@@ -18,6 +18,8 @@
+ dependencies {
++    // Explicit AndroidX Core dependency for WindowInsetsCompat / ViewCompat.
++    implementation("androidx.core:core-ktx:1.15.0")
+     // GeckoView is the browser engine; unlike Android WebView it supports WebExtensions.
+     implementation("org.mozilla.geckoview:geckoview:138.0.20250517143237")
