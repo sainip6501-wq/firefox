@@ -1,0 +1,26 @@
+# Conservative extra third-party ad / tracker hosts for SBlock's starter host filter.
+# These are suffix matches; review before enabling strict blocking on streaming sites.
+tq-tungsten.com
+quantserve.com
+demandbase.com
+indexexchange.com
+triplelift.com
+sovrn.com
+districtm.io
+getintent.com
+gumgum.com
+justpremium.com
+loopme.com
+innovid.com
+insticator.com
+revcontent.com
+revjet.com
+spotxchange.com
+adlightning.com
+admanmedia.com
+adpushup.com
+adrecover.com
+adzerk.net
+adthrive.com
+e-planning.net
+mytarget.com
